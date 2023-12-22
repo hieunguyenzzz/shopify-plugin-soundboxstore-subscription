@@ -21,9 +21,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
   return null
 };
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
-
+  console.log({ params }, await request.json());
   const response = await admin.graphql(
     `#graphql
       query getSubscriptions {
@@ -125,8 +125,8 @@ function Content() {
   const [selected, setSelected] = useState(0);
   useEffect(() => {
     submit({
-      test: "test"
-    }, { replace: true, method: "POST" })
+      body: { test: "test" }
+    }, { replace: true, method: "post", encType: "application/json" })
   }, [selected]);
   const sortOptions: IndexFiltersProps['sortOptions'] = [
     { label: 'Order', value: 'order asc', directionLabel: 'Ascending' },

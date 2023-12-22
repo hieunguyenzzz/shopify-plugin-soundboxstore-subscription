@@ -2,18 +2,18 @@
 
 name = "plugin-subscription"
 client_id = "a1b2fc5f328819ca821266a6622ee9f5"
-application_url = "https://terry-information-lessons-raw.trycloudflare.com"
+application_url = "https://copyright-warcraft-albuquerque-bat.trycloudflare.com"
 embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products,read_customers,read_orders"
+scopes = "write_products,read_customers,read_orders,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://terry-information-lessons-raw.trycloudflare.com/auth/callback",
-  "https://terry-information-lessons-raw.trycloudflare.com/auth/shopify/callback",
-  "https://terry-information-lessons-raw.trycloudflare.com/api/auth/callback"
+  "https://copyright-warcraft-albuquerque-bat.trycloudflare.com/auth/callback",
+  "https://copyright-warcraft-albuquerque-bat.trycloudflare.com/auth/shopify/callback",
+  "https://copyright-warcraft-albuquerque-bat.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

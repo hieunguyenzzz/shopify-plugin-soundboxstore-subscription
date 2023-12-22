@@ -20,20 +20,27 @@
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",
+    "@radix-ui/react-toast": "^1.1.5",
     "@remix-run/dev": "^2.0.0",
     "@remix-run/node": "^2.0.0",
     "@remix-run/react": "^2.0.0",
     "@remix-run/serve": "^2.0.0",
+    "@scure/base": "^1.1.5",
     "@shopify/app": "3.52.0",
     "@shopify/cli": "3.52.0",
     "@shopify/polaris": "^12.0.0",
     "@shopify/shopify-api": "^8.0.2",
     "@shopify/shopify-app-remix": "^2.1.0",
     "@shopify/shopify-app-session-storage-prisma": "^2.0.0",
+    "class-variance-authority": "^0.7.0",
     "isbot": "latest",
+    "lucide-react": "^0.299.0",
     "prisma": "^4.13.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-pdf": "^7.6.0",
+    "tailwind-merge": "^2.2.0",
+    "ts-pattern": "^5.0.6"
   },
   "devDependencies": {
     "@remix-run/eslint-config": "^2.0.0",
