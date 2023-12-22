@@ -4,10 +4,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Loader } from 'lucide-react';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
+import pdfJSWorkerURL from "pdfjs-dist/build/pdf.worker?url";
 import { Document as PDFDocument, Page as PDFPage, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-
 
 import { base64 } from '@scure/base';
 import { match } from 'ts-pattern';
@@ -20,7 +20,11 @@ export const DocumentDataType = {
   BYTES_64: 'BYTES_64'
 } as const;
 
-export type DocumentDataType = (typeof DocumentDataType)[keyof typeof DocumentDataType]
+export type DocumentDataType = {
+  id: string
+  data: string
+  type: (typeof DocumentDataType)[keyof typeof DocumentDataType]
+}
 export type GetFileOptions = {
   type: any;
   data: string;
@@ -50,7 +54,7 @@ export type LoadedPDFDocument = PDFDocumentProxy;
 /**
  * This imports the worker from the `pdfjs-dist` package.
  */
-pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = pdfJSWorkerURL;
 
 export type OnPDFViewerPageClick = (_event: {
   pageNumber: number;
