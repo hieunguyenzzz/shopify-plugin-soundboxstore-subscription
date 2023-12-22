@@ -159,8 +159,9 @@ function Content() {
 
 
   const orders = actionData?.orders.nodes.map((order: any) => {
+    let id = order.id.split('/').reverse()[0];
     return {
-      id: order.id,
+      id,
       order: (
         <Text as="span" variant="bodyMd" fontWeight="semibold">
           {order.name}
@@ -174,6 +175,7 @@ function Content() {
       }).format(Number(order.currentTotalPriceSet.presentmentMoney.amount)),
       paymentStatus: <Badge progress="complete">Paid</Badge>,
       fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+      href: `shopify://admin/orders/${id}`,
     }
   }) || [
 
@@ -188,7 +190,7 @@ function Content() {
 
   const rowMarkup = orders.map(
     (
-      { id, order, date, customer, total, paymentStatus, fulfillmentStatus },
+      { id, order, date, customer, total, paymentStatus, fulfillmentStatus, href },
       index,
     ) => (
       <IndexTable.Row
@@ -204,12 +206,16 @@ function Content() {
         </IndexTable.Cell>
         <IndexTable.Cell>{date}</IndexTable.Cell>
         <IndexTable.Cell>{customer}</IndexTable.Cell>
-
-        <IndexTable.Cell>{paymentStatus}</IndexTable.Cell>
-        <IndexTable.Cell >{fulfillmentStatus}</IndexTable.Cell>
         <IndexTable.Cell>
           <Text as="span" alignment="end" numeric>
             {total}
+          </Text>
+        </IndexTable.Cell>
+        <IndexTable.Cell>
+          <Text as="span" alignment="end" numeric>
+            <a style={{
+              textAlign: "right"
+            }} href={href} target="_top">{'Order details'}</a>
           </Text>
         </IndexTable.Cell>
       </IndexTable.Row>
@@ -250,14 +256,14 @@ function Content() {
         selectedItemsCount={
           allResourcesSelected ? 'All' : selectedResources.length
         }
+        selectable={false}
         onSelectionChange={handleSelectionChange}
         headings={[
           { title: 'Order' },
           { title: 'Date' },
           { title: 'Customer' },
-          { title: 'Payment status' },
-          { title: 'Fulfillment status' },
           { title: 'Total', alignment: 'end' },
+          { title: 'Details', alignment: 'end' },
         ]}
       >
         {rowMarkup}

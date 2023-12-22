@@ -2,7 +2,7 @@
 
 name = "plugin-subscription"
 client_id = "a1b2fc5f328819ca821266a6622ee9f5"
-application_url = "https://addressing-personalized-leonard-creations.trycloudflare.com"
+application_url = "https://terry-information-lessons-raw.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_customers,read_orders"
 
 [auth]
 redirect_urls = [
-  "https://addressing-personalized-leonard-creations.trycloudflare.com/auth/callback",
-  "https://addressing-personalized-leonard-creations.trycloudflare.com/auth/shopify/callback",
-  "https://addressing-personalized-leonard-creations.trycloudflare.com/api/auth/callback"
+  "https://terry-information-lessons-raw.trycloudflare.com/auth/callback",
+  "https://terry-information-lessons-raw.trycloudflare.com/auth/shopify/callback",
+  "https://terry-information-lessons-raw.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
