@@ -1,3 +1,27 @@
-# This file stores configurations for your Shopify app.
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-scopes = "write_products"
+name = "plugin-subscription"
+client_id = "a1b2fc5f328819ca821266a6622ee9f5"
+application_url = "https://addressing-personalized-leonard-creations.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products,read_customers,read_orders"
+
+[auth]
+redirect_urls = [
+  "https://addressing-personalized-leonard-creations.trycloudflare.com/auth/callback",
+  "https://addressing-personalized-leonard-creations.trycloudflare.com/auth/shopify/callback",
+  "https://addressing-personalized-leonard-creations.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2023-10"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "soundboxdev.myshopify.com"

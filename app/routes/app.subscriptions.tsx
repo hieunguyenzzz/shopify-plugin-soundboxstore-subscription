@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
-import { useActionData, useNavigation, useSubmit } from '@remix-run/react';
+import { useActionData, useSubmit } from '@remix-run/react';
 import type { IndexFiltersProps, TabProps } from '@shopify/polaris';
 import {
   Badge,
@@ -105,7 +105,6 @@ export default function AdditionalPage() {
 function Content() {
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
-  let loading = useNavigation().state === "loading"
   const [itemStrings] = useState([
     'All',
     'Upcomming',
@@ -176,7 +175,45 @@ function Content() {
       fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
     }
   }) || [
-
+      {
+        id: '1020',
+        order: (
+          <Text as="span" variant="bodyMd" fontWeight="semibold">
+            #1020
+          </Text>
+        ),
+        date: 'Jul 20 at 4:34pm',
+        customer: 'Jaydon Stanton',
+        total: '$969.44',
+        paymentStatus: <Badge progress="complete">Paid</Badge>,
+        fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+      },
+      {
+        id: '1019',
+        order: (
+          <Text as="span" variant="bodyMd" fontWeight="semibold">
+            #1019
+          </Text>
+        ),
+        date: 'Jul 20 at 3:46pm',
+        customer: 'Ruben Westerfelt',
+        total: '$701.19',
+        paymentStatus: <Badge progress="partiallyComplete">Partially paid</Badge>,
+        fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+      },
+      {
+        id: '1018',
+        order: (
+          <Text as="span" variant="bodyMd" fontWeight="semibold">
+            #1018
+          </Text>
+        ),
+        date: 'Jul 20 at 3.44pm',
+        customer: 'Leo Carder',
+        total: '$798.24',
+        paymentStatus: <Badge progress="complete">Paid</Badge>,
+        fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+      },
     ];
   const resourceName = {
     singular: 'order',
@@ -219,8 +256,6 @@ function Content() {
   return (
     <LegacyCard>
       <IndexFilters
-        disabled={loading}
-        loading={loading}
         sortOptions={sortOptions}
         sortSelected={sortSelected}
         queryValue={queryValue}
