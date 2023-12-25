@@ -29,6 +29,7 @@
     "@shopify/app": "3.52.0",
     "@shopify/cli": "3.52.0",
     "@shopify/polaris": "^12.0.0",
+    "@shopify/polaris-icons": "^7.13.0",
     "@shopify/shopify-api": "^8.0.2",
     "@shopify/shopify-app-remix": "^2.1.0",
     "@shopify/shopify-app-session-storage-prisma": "^2.0.0",
@@ -39,6 +40,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-pdf": "^7.6.0",
+    "react-rnd": "^10.4.1",
     "tailwind-merge": "^2.2.0",
     "ts-pattern": "^5.0.6"
   },

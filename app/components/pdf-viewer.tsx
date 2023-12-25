@@ -1,30 +1,29 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { Loader } from 'lucide-react';
-import type { PDFDocumentProxy } from 'pdfjs-dist';
-import pdfJSWorkerURL from "pdfjs-dist/build/pdf.worker?url";
-import { Document as PDFDocument, Page as PDFPage, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import { Loader } from "lucide-react";
+import type { PDFDocumentProxy } from "pdfjs-dist";
+import { Document as PDFDocument, Page as PDFPage, pdfjs } from "react-pdf";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import "react-pdf/dist/esm/Page/TextLayer.css";
 
-import { base64 } from '@scure/base';
-import { match } from 'ts-pattern';
-import { useToast } from './lib/use-toast';
-import { cn } from './lib/utils';
-const PDF_VIEWER_PAGE_SELECTOR = '.react-pdf__Page';
+import { base64 } from "@scure/base";
+import { match } from "ts-pattern";
+import { useToast } from "./lib/use-toast";
+import { cn } from "./lib/utils";
+const PDF_VIEWER_PAGE_SELECTOR = ".react-pdf__Page";
 export const DocumentDataType = {
-  S3_PATH: 'S3_PATH',
-  BYTES: 'BYTES',
-  BYTES_64: 'BYTES_64'
+  S3_PATH: "S3_PATH",
+  BYTES: "BYTES",
+  BYTES_64: "BYTES_64",
 } as const;
 
 export type DocumentDataType = {
-  id: string
-  data: string
-  type: (typeof DocumentDataType)[keyof typeof DocumentDataType]
-}
+  id: string;
+  data: string;
+  type: (typeof DocumentDataType)[keyof typeof DocumentDataType];
+};
 export type GetFileOptions = {
   type: any;
   data: string;
@@ -54,7 +53,7 @@ export type LoadedPDFDocument = PDFDocumentProxy;
 /**
  * This imports the worker from the `pdfjs-dist` package.
  */
-pdfjs.GlobalWorkerOptions.workerSrc = pdfJSWorkerURL;
+pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`;
 
 export type OnPDFViewerPageClick = (_event: {
   pageNumber: number;
@@ -80,7 +79,7 @@ export type PDFViewerProps = {
   onDocumentLoad?: (_doc: LoadedPDFDocument) => void;
   onPageClick?: OnPDFViewerPageClick;
   [key: string]: unknown;
-} & Omit<React.HTMLAttributes<HTMLDivElement>, 'onPageClick'>;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, "onPageClick">;
 
 export const PDFViewer = ({
   className,
@@ -160,10 +159,10 @@ export const PDFViewer = ({
         setWidth(width);
       };
 
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
 
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }
   }, []);
@@ -182,9 +181,9 @@ export const PDFViewer = ({
         console.error(err);
 
         toast({
-          title: 'Error',
-          description: 'An error occurred while loading the document.',
-          variant: 'destructive',
+          title: "Error",
+          description: "An error occurred while loading the document.",
+          variant: "destructive",
         });
       }
     };
@@ -193,11 +192,11 @@ export const PDFViewer = ({
   }, [memoizedData, toast]);
 
   return (
-    <div ref={$el} className={cn('overflow-hidden', className)} {...props}>
+    <div ref={$el} className={cn("overflow-hidden", className)} {...props}>
       {isLoading ? (
         <div
           className={cn(
-            'flex h-[80vh] max-h-[60rem] w-full flex-col items-center justify-center overflow-hidden rounded',
+            "flex h-[80vh] max-h-[60rem] w-full flex-col items-center justify-center overflow-hidden rounded",
           )}
         >
           <PDFLoader />
@@ -205,8 +204,8 @@ export const PDFViewer = ({
       ) : (
         <PDFDocument
           file={documentBytes.buffer}
-          className={cn('w-full overflow-hidden rounded', {
-            'h-[80vh] max-h-[60rem]': numPages === 0,
+          className={cn("w-full overflow-hidden rounded", {
+            "h-[80vh] max-h-[60rem]": numPages === 0,
           })}
           onLoadSuccess={(d) => onDocumentLoaded(d)}
           // Uploading a invalid document causes an error which doesn't appear to be handled by the `error` prop.
@@ -220,7 +219,9 @@ export const PDFViewer = ({
               {pdfError ? (
                 <div className="text-muted-foreground text-center">
                   <p>Something went wrong while loading the document.</p>
-                  <p className="mt-1 text-sm">Please try again or contact our support.</p>
+                  <p className="mt-1 text-sm">
+                    Please try again or contact our support.
+                  </p>
                 </div>
               ) : (
                 <PDFLoader />
@@ -231,7 +232,9 @@ export const PDFViewer = ({
             <div className="dark:bg-background flex h-[80vh] max-h-[60rem] flex-col items-center justify-center bg-white/50">
               <div className="text-muted-foreground text-center">
                 <p>Something went wrong while loading the document.</p>
-                <p className="mt-1 text-sm">Please try again or contact our support.</p>
+                <p className="mt-1 text-sm">
+                  Please try again or contact our support.
+                </p>
               </div>
             </div>
           }
@@ -248,7 +251,7 @@ export const PDFViewer = ({
                   width={width}
                   renderAnnotationLayer={false}
                   renderTextLayer={false}
-                  loading={() => ''}
+                  loading={() => ""}
                   onClick={(e) => onDocumentPageClick(e, i + 1)}
                 />
               </div>

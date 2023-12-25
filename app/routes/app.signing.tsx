@@ -1,17 +1,23 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
-import { useActionData, useSubmit } from '@remix-run/react';
-import { base64 } from '@scure/base';
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import { useActionData, useSubmit } from "@remix-run/react";
+import { base64 } from "@scure/base";
 import {
   BlockStack,
   DropZone,
+  Frame,
+  Grid,
   Layout,
+  Navigation,
   Page,
-  Thumbnail
+  Sticky,
+  Thumbnail,
 } from "@shopify/polaris";
-import { useState } from 'react';
-import { toast } from '~/components/lib/use-toast';
-import PDFViewer, { DocumentDataType } from '~/components/pdf-viewer';
-import { authenticate } from '~/shopify.server';
+import { ArrowLeftMinor, PackageFilledMajor } from "@shopify/polaris-icons";
+import { useState } from "react";
+import AddFields from "~/components/add-fields";
+import { toast } from "~/components/lib/use-toast";
+import PDFViewer, { DocumentDataType } from "~/components/pdf-viewer";
+import { authenticate } from "~/shopify.server";
 
 const STAGED_UPLOADS_CREATE = `
     #graphql
@@ -35,15 +41,13 @@ const STAGED_UPLOADS_CREATE = `
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
-  return null
+  return null;
 };
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
   let body = await request.json();
-  console.log({ body })
-  const response = await admin.graphql(STAGED_UPLOADS_CREATE,
-    body
-  );
+  console.log({ body });
+  const response = await admin.graphql(STAGED_UPLOADS_CREATE, body);
   const responseJson = await response.json();
   console.log(responseJson);
   return json({
@@ -63,21 +67,20 @@ export default function AdditionalPage() {
   );
 }
 
-
-
-
 export function FileDropperFunctional() {
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
-  const [uploadedFile, setUploadedFile] = useState<{ file: File; fileBase64: string } | null>();
-  console.log({ actionData })
+  const [uploadedFile, setUploadedFile] = useState<{
+    file: File;
+    fileBase64: string;
+  } | null>();
+  const [files, setFiles] = useState<File[]>([]);
+  console.log({ actionData });
   // function to run after submission: props.afterSubmit
-
-
 
   function handleDropzoneDrop(files: File[]) {
     // console.log(files)
-    let file = files[0]
+    let file = files[0];
     const onFileDrop = async (file: File) => {
       try {
         const arrayBuffer = await file.arrayBuffer();
@@ -86,60 +89,110 @@ export function FileDropperFunctional() {
           file,
           fileBase64,
         });
+        setFiles((files) => [...files, file]);
       } catch {
         toast({
-          title: 'Something went wrong',
-          description: 'Please try again later.',
-          variant: 'destructive',
+          title: "Something went wrong",
+          description: "Please try again later.",
+          variant: "destructive",
         });
       }
     };
-    onFileDrop(file)
-
+    onFileDrop(file);
   }
 
   var fileUpload = !uploadedFile && <DropZone.FileUpload />;
   var uploadedFiles = uploadedFile && (
-    <div style={{ padding: '0' }}>
-      <BlockStack >
-        <BlockStack align='center' >
+    <div style={{ padding: "0" }}>
+      <BlockStack>
+        <BlockStack align="center">
           <Thumbnail
             size="small"
             alt={uploadedFile.file.name}
-            source={
-              () => <svg stroke="currentColor" fill="currentColor" strokeWidth={0} viewBox="0 0 512 512" height="200px" width="200px" xmlns="http://www.w3.org/2000/svg"><path d="M96 352V96c0-35.3 28.7-64 64-64H416c35.3 0 64 28.7 64 64V293.5c0 17-6.7 33.3-18.7 45.3l-58.5 58.5c-12 12-28.3 18.7-45.3 18.7H160c-35.3 0-64-28.7-64-64zM272 128c-8.8 0-16 7.2-16 16v48H208c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h48v48c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V256h48c8.8 0 16-7.2 16-16V208c0-8.8-7.2-16-16-16H320V144c0-8.8-7.2-16-16-16H272zm24 336c13.3 0 24 10.7 24 24s-10.7 24-24 24H136C60.9 512 0 451.1 0 376V152c0-13.3 10.7-24 24-24s24 10.7 24 24l0 224c0 48.6 39.4 88 88 88H296z" /></svg>
-            }
+            source={() => (
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth={0}
+                viewBox="0 0 512 512"
+                height="200px"
+                width="200px"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M96 352V96c0-35.3 28.7-64 64-64H416c35.3 0 64 28.7 64 64V293.5c0 17-6.7 33.3-18.7 45.3l-58.5 58.5c-12 12-28.3 18.7-45.3 18.7H160c-35.3 0-64-28.7-64-64zM272 128c-8.8 0-16 7.2-16 16v48H208c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h48v48c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V256h48c8.8 0 16-7.2 16-16V208c0-8.8-7.2-16-16-16H320V144c0-8.8-7.2-16-16-16H272zm24 336c13.3 0 24 10.7 24 24s-10.7 24-24 24H136C60.9 512 0 451.1 0 376V152c0-13.3 10.7-24 24-24s24 10.7 24 24l0 224c0 48.6 39.4 88 88 88H296z" />
+              </svg>
+            )}
           />
           <div>
-            {uploadedFile.file.name} <small>{uploadedFile.file.size} bytes</small>
+            {uploadedFile.file.name}{" "}
+            <small>{uploadedFile.file.size} bytes</small>
           </div>
         </BlockStack>
       </BlockStack>
     </div>
   );
 
-
-
   return (
-
     <>
-      <DropZone onDrop={handleDropzoneDrop} allowMultiple={false}>
-        {uploadedFiles}
-        {fileUpload}
-      </DropZone>
-      {
-        uploadedFile && <PDFViewer
-          documentData={{
-            id: '',
-            data: uploadedFile.fileBase64,
-            initialData: uploadedFile.fileBase64,
-            type: DocumentDataType.BYTES_64,
-          }}
-        />
-      }
+      <Frame
+        navigation={
+          <Navigation location="/">
+            <Navigation.Section
+              items={[
+                {
+                  label: "Back",
+                  icon: ArrowLeftMinor,
+                },
+              ]}
+            />
+            <Navigation.Section
+              separator
+              title={"Documents"}
+              items={[
+                {
+                  label: "Upload Document",
+                  icon: PackageFilledMajor,
+                  onClick: () => setUploadedFile(null),
+                },
+                ...files.map((file) => {
+                  return {
+                    label: file.name,
+                    icon: PackageFilledMajor,
+                    onClick: console.log,
+                  };
+                }),
+              ]}
+            />
+          </Navigation>
+        }
+      >
+        {uploadedFile ? (
+          <Page fullWidth>
+            <Grid>
+              <Grid.Cell columnSpan={{ xs: 4, sm: 4, md: 4, lg: 8, xl: 8 }}>
+                <PDFViewer
+                  documentData={{
+                    id: "",
+                    data: uploadedFile.fileBase64,
+                    initialData: uploadedFile.fileBase64,
+                    type: DocumentDataType.BYTES_64,
+                  }}
+                />
+              </Grid.Cell>
+              <Grid.Cell columnSpan={{ xs: 2, sm: 2, md: 2, lg: 4, xl: 4 }}>
+                <Sticky>
+                  <AddFields />
+                </Sticky>
+              </Grid.Cell>
+            </Grid>
+          </Page>
+        ) : (
+          <DropZone onDrop={handleDropzoneDrop} allowMultiple={false}>
+            {uploadedFiles}
+            {fileUpload}
+          </DropZone>
+        )}
+      </Frame>
     </>
   );
-
-
-
 }
