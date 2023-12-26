@@ -2,7 +2,7 @@
 
 name = "plugin-subscription"
 client_id = "a1b2fc5f328819ca821266a6622ee9f5"
-application_url = "https://soc-chose-shoppers-envelope.trycloudflare.com"
+application_url = "https://sweden-provision-offers-hired.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_customers,read_orders,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://soc-chose-shoppers-envelope.trycloudflare.com/auth/callback",
-  "https://soc-chose-shoppers-envelope.trycloudflare.com/auth/shopify/callback",
-  "https://soc-chose-shoppers-envelope.trycloudflare.com/api/auth/callback"
+  "https://sweden-provision-offers-hired.trycloudflare.com/auth/callback",
+  "https://sweden-provision-offers-hired.trycloudflare.com/auth/shopify/callback",
+  "https://sweden-provision-offers-hired.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

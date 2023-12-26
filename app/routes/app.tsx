@@ -23,6 +23,9 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
+        <Link to="/app/signing" rel="Signing">
+          Signing
+        </Link>
       </ui-nav-menu>
       <Outlet />
     </AppProvider>

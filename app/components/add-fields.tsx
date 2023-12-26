@@ -22,7 +22,9 @@ function AddFields() {
   const { isWithinPageBounds, getFieldPosition, getPage } =
     useDocumentElement();
   const [isFieldWithinBounds, setIsFieldWithinBounds] = useState(false);
-  const [selectedField, setSelectedField] = useState<"signature" | null>(null);
+  const [selectedField, setSelectedField] = useState<"signature" | null>(
+    "signature",
+  );
   const [selectedSigner, setSelectedSigner] = useState<any | null>({
     id: "signature",
   });

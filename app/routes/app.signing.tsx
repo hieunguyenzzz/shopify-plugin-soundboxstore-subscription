@@ -56,7 +56,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 export default function AdditionalPage() {
   return (
-    <Page>
+    <Page fullWidth>
       <ui-title-bar title="Subscriptions" />
       <Layout>
         <Layout.Section>
@@ -142,6 +142,7 @@ export function FileDropperFunctional() {
                 {
                   label: "Back",
                   icon: ArrowLeftMinor,
+                  url: "/app",
                 },
               ]}
             />
@@ -167,7 +168,7 @@ export function FileDropperFunctional() {
         }
       >
         {uploadedFile ? (
-          <Page fullWidth>
+          <Page>
             <Grid>
               <Grid.Cell columnSpan={{ xs: 4, sm: 4, md: 4, lg: 8, xl: 8 }}>
                 <PDFViewer
@@ -187,10 +188,12 @@ export function FileDropperFunctional() {
             </Grid>
           </Page>
         ) : (
-          <DropZone onDrop={handleDropzoneDrop} allowMultiple={false}>
-            {uploadedFiles}
-            {fileUpload}
-          </DropZone>
+          <Page>
+            <DropZone onDrop={handleDropzoneDrop} allowMultiple={false}>
+              {uploadedFiles}
+              {fileUpload}
+            </DropZone>
+          </Page>
         )}
       </Frame>
     </>
