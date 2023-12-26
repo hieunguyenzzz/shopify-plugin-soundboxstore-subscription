@@ -120,7 +120,7 @@ export const FieldItem = ({
         onMove?.(d.node);
       }}
     >
-      <div className="text-foreground group flex justify-center items-center border-blue-600 bg-blue-100 text-center relative rounded-lg border-2 backdrop-blur-[2px] shadow-[0_0_0_4px_theme(colors.gray.100/70%),0_0_0_1px_theme(colors.gray.100/70%),0_0_0_0.5px_theme(colors.primary.DEFAULT/70%)] dark:shadow-[0] bg-background h-full w-full border-primary">
+      <div className="text-foreground group flex justify-center items-center border-blue-600 bg-blue-100 text-center relative rounded-lg border-2 backdrop-blur-[2px]   bg-background h-full w-full border-primary">
         <p>{field.type}</p>
         <div
           style={{ position: "absolute", bottom: "100%", right: 0 }}

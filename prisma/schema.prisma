@@ -20,3 +20,10 @@ model Session {
   accessToken String
   userId      BigInt?
 }
+
+model Document {
+  id          String    @id
+  shop        String
+  data        String
+}
+

@@ -16,9 +16,14 @@ const MIN_WIDTH_PX = 120;
 const SendStatus = {
   SENT: "SENT",
 } as const;
-function AddFields() {
-  const [fields, setFields] = useState<FieldType[]>([]);
-  const [localFields, setLocalFields] = useState<FieldType[]>([]);
+function AddFields({
+  onChange,
+  defaultFields = [],
+}: {
+  onChange: (fields: FieldType[]) => void;
+  defaultFields?: FieldType[];
+}) {
+  const [localFields, setLocalFields] = useState<FieldType[]>(defaultFields);
   const { isWithinPageBounds, getFieldPosition, getPage } =
     useDocumentElement();
   const [isFieldWithinBounds, setIsFieldWithinBounds] = useState(false);
@@ -116,7 +121,6 @@ function AddFields() {
   );
 
   useEffect(() => {
-    console.log({ selectedField });
     if (selectedField) {
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("mouseup", onMouseClick);
@@ -127,7 +131,9 @@ function AddFields() {
       window.removeEventListener("mouseup", onMouseClick);
     };
   }, [onMouseClick, onMouseMove, selectedField]);
-
+  useEffect(() => {
+    onChange(localFields);
+  }, [localFields]);
   useEffect(() => {
     const observer = new MutationObserver((_mutations) => {
       const $page = document.querySelector(PDF_VIEWER_PAGE_SELECTOR);

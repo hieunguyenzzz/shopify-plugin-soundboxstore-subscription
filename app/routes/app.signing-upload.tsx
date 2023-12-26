@@ -1,10 +1,5 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import {
-  useActionData,
-  useLoaderData,
-  useSearchParams,
-  useSubmit,
-} from "@remix-run/react";
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import { base64 } from "@scure/base";
 import {
   BlockStack,
@@ -25,9 +20,41 @@ import { toast } from "~/components/lib/use-toast";
 import PDFViewer, { DocumentDataType } from "~/components/pdf-viewer";
 import { authenticate } from "~/shopify.server";
 
+const STAGED_UPLOADS_CREATE = `#graphql
+    mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
+      stagedUploadsCreate(input: $input) {
+        stagedTargets {
+          resourceUrl
+          url
+          parameters {
+            name
+            value
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+`;
+const FILE_CREATE = `#graphql
+    mutation fileCreate($files: [FileCreateInput!]!) {
+      fileCreate(files: $files) {
+        files {
+         alt
+         id
+          
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+`;
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
-  const id = new URL(request.url).searchParams.get("id");
   const response = await admin.graphql(
     `#graphql
     query {
@@ -47,29 +74,24 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       }
     }`,
   );
-
-  let doc = id
-    ? await prisma.document.findFirst({
-        where: {
-          id: id,
-        },
-      })
-    : null;
-
   return response;
 };
-
 export const action = async ({ request }: ActionFunctionArgs) => {
-  await authenticate.admin(request);
+  const { admin } = await authenticate.admin(request);
   let body = await request.json();
-  let response = await prisma.document.upsert({
-    create: body,
-    update: body,
-    where: {
-      id: body.id,
+  let response = await admin.graphql(STAGED_UPLOADS_CREATE, body);
+  let responseJson = await response.json();
+  response = await admin.graphql(FILE_CREATE, {
+    variables: {
+      files: {
+        contentType: "FILE",
+        originalSource:
+          responseJson.data.stagedUploadsCreate.stagedTargets[0].resourceUrl,
+      },
     },
   });
-  return response;
+  responseJson = await response.json();
+  return json(responseJson);
 };
 export default function AdditionalPage() {
   return (
@@ -85,32 +107,23 @@ export default function AdditionalPage() {
 }
 
 export function FileDropperFunctional() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const loaderData = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
-  const id = searchParams.get("id");
   const [uploadedFile, setUploadedFile] = useState<DocumentDataType | null>(
-    id
-      ? {
-          data: id,
-          id: "",
-          type: DocumentDataType.S3_PATH,
-        }
-      : loaderData?.data?.files?.edges?.[0]?.node && {
-          data: loaderData?.data?.files?.edges?.[0]?.node.url,
-          id: "",
-          type: DocumentDataType.S3_PATH,
-        },
+    loaderData?.data?.files?.edges?.[0]?.node && {
+      data: loaderData?.data?.files?.edges?.[0]?.node.url,
+      id: "",
+      type: DocumentDataType.S3_PATH,
+    },
   );
-  const files =
-    loaderData?.data?.files?.edges?.map((edge: any) => {
-      let name = edge.node.url.split("/").reverse()[0].split("?v=")[0];
-      return {
-        ...edge.node,
-        name,
-      };
-    }) || [];
+  const files = loaderData?.data?.files?.edges?.map((edge: any) => {
+    let name = edge.node.url.split("/").reverse()[0].split("?v=")[0];
+    return {
+      ...edge.node,
+      name,
+    };
+  });
   console.log({ actionData, loaderData, files });
   // function to run after submission: props.afterSubmit
 
@@ -162,7 +175,6 @@ export function FileDropperFunctional() {
 
   var fileUpload = !uploadedFile && <DropZone.FileUpload />;
   const fieldsRef = useRef<any>(null);
-
   console.log({ uploadedFile });
   return (
     <>
@@ -182,19 +194,21 @@ export function FileDropperFunctional() {
               separator
               title={"Documents"}
               items={[
+                {
+                  label: "Upload Document",
+                  icon: PackageFilledMajor,
+                  onClick: () => setUploadedFile(null),
+                },
                 ...files.map((file) => {
                   return {
                     label: file.name,
                     icon: PackageFilledMajor,
                     onClick: () => {
-                      const params = new URLSearchParams();
-                      params.set("id", file.url);
-                      setSearchParams(params);
-                      // setUploadedFile({
-                      //   data: file.url,
-                      //   id: "",
-                      //   type: DocumentDataType.S3_PATH,
-                      // });
+                      setUploadedFile({
+                        data: file.url,
+                        id: "",
+                        type: DocumentDataType.S3_PATH,
+                      });
                     },
                   };
                 }),
@@ -220,17 +234,14 @@ export function FileDropperFunctional() {
                         primaryAction={{
                           content: "Save",
                           onAction: async () => {
-                            submit(
-                              {
+                            "use server";
+                            await prisma.document.create({
+                              data: {
                                 data: JSON.stringify(fieldsRef.current),
                                 shop: "any",
                                 id: uploadedFile.data,
                               },
-                              {
-                                method: "POST",
-                                encType: "application/json",
-                              },
-                            );
+                            });
                           },
                         }}
                         secondaryActions={[

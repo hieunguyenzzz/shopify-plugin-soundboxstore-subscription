@@ -10,7 +10,6 @@ import "react-pdf/dist/esm/Page/TextLayer.css";
 
 import { base64 } from "@scure/base";
 import { match } from "ts-pattern";
-import { useToast } from "./lib/use-toast";
 import { cn } from "./lib/utils";
 const PDF_VIEWER_PAGE_SELECTOR = ".react-pdf__Page";
 export const DocumentDataType = {
@@ -38,14 +37,16 @@ const getFileFromBytes = (data: string) => {
 
 const getFileFromBytes64 = (data: string) => {
   const binaryData = base64.decode(data);
-
   return binaryData;
 };
-
+const getFileFromPath = (data: string) => {
+  return data;
+};
 const getFile = async ({ type, data }: GetFileOptions) => {
   return await match(type)
     .with(DocumentDataType.BYTES, () => getFileFromBytes(data))
     .with(DocumentDataType.BYTES_64, () => getFileFromBytes64(data))
+    .with(DocumentDataType.S3_PATH, () => getFileFromPath(data))
     .exhaustive();
 };
 export type LoadedPDFDocument = PDFDocumentProxy;
@@ -88,8 +89,6 @@ export const PDFViewer = ({
   onPageClick,
   ...props
 }: PDFViewerProps) => {
-  const { toast } = useToast();
-
   const $el = useRef<HTMLDivElement>(null);
 
   const [isDocumentBytesLoading, setIsDocumentBytesLoading] = useState(false);
@@ -103,7 +102,6 @@ export const PDFViewer = ({
     () => ({ type: documentData.type, data: documentData.data }),
     [documentData.data, documentData.type],
   );
-
   const isLoading = isDocumentBytesLoading || !documentBytes;
 
   const onDocumentLoaded = (doc: LoadedPDFDocument) => {
@@ -179,17 +177,11 @@ export const PDFViewer = ({
         setIsDocumentBytesLoading(false);
       } catch (err) {
         console.error(err);
-
-        toast({
-          title: "Error",
-          description: "An error occurred while loading the document.",
-          variant: "destructive",
-        });
       }
     };
 
     void fetchDocumentBytes();
-  }, [memoizedData, toast]);
+  }, [memoizedData]);
 
   return (
     <div ref={$el} className={cn("overflow-hidden", className)} {...props}>
@@ -203,7 +195,11 @@ export const PDFViewer = ({
         </div>
       ) : (
         <PDFDocument
-          file={documentBytes.buffer}
+          file={
+            memoizedData.type === DocumentDataType.S3_PATH
+              ? memoizedData.data
+              : documentBytes.buffer
+          }
           className={cn("w-full overflow-hidden rounded", {
             "h-[80vh] max-h-[60rem]": numPages === 0,
           })}
