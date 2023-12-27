@@ -28,7 +28,6 @@ function AddFields({
     useDocumentElement();
   const [isFieldWithinBounds, setIsFieldWithinBounds] = useState(false);
   const [selectedField, setSelectedField] = useState<"signature" | null>(
-    "signature",
   );
   const [selectedSigner, setSelectedSigner] = useState<any | null>({
     id: "signature",
@@ -269,7 +268,7 @@ function AddFields({
           </Card>
         </div>
       )}
-      {localFields.map((field, index) => (
+      {localFields?.map((field, index) => (
         <FieldItem
           key={index}
           field={field}

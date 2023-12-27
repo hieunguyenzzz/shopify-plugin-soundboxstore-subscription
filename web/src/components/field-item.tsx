@@ -1,14 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-
 import { createPortal } from "react-dom";
 import { Rnd } from "react-rnd";
-
-import { Button } from "@shopify/polaris";
-import { PDF_VIEWER_PAGE_SELECTOR } from "~/lib/contants";
-import { FieldType } from "~/lib/type";
-import { cn } from "./lib/utils";
+import { cn } from "../lib/utils";
+const PDF_VIEWER_PAGE_SELECTOR = ".react-pdf__Page";
+export type FieldType = {
+  formId: string;
+  type: "signature"
+  pageNumber: number;
+  pageX: number;
+  pageY: number;
+  pageWidth: number;
+  pageHeight: number;
+};
 type TDocumentFlowFormSchema = {
   fields: [FieldType];
 };
@@ -23,11 +28,13 @@ export type FieldItemProps = {
   onResize?: (_node: HTMLElement) => void;
   onMove?: (_node: HTMLElement) => void;
   onRemove?: () => void;
+  imageUrl?: string
 };
 
 export const FieldItem = ({
   field,
   passive,
+  imageUrl,
   disabled,
   minHeight: _minHeight,
   minWidth: _minWidth,
@@ -101,6 +108,7 @@ export const FieldItem = ({
         "pointer-events-none opacity-75": disabled,
         "z-10": !active || disabled,
       })}
+      disableDragging={true}
       default={{
         x: coords.pageX,
         y: coords.pageY,
@@ -119,22 +127,12 @@ export const FieldItem = ({
         onMove?.(d.node);
       }}
     >
-      <div className="text-foreground group flex justify-center items-center border-blue-600 bg-blue-100 text-center relative rounded-lg border-2 backdrop-blur-[2px]  bg-background h-full w-full border-primary">
-        <p>{field.type}</p>
-        <div
-          style={{ position: "absolute", bottom: "100%", right: 0 }}
-          className="py-2"
-        >
-          <Button
-            fullWidth
-            variant="plain"
-            tone="critical"
-            onClick={onRemove}
-            accessibilityLabel="Remove"
-          >
-            Remove
-          </Button>
-        </div>
+      <div className="text-foreground group flex justify-center items-center border-gray-100 bg-white text-center relative rounded-lg border-2 backdrop-blur-[2px]  bg-background h-full w-full border-primary">
+        {!imageUrl && <p>{field.type}</p>}
+        {
+          imageUrl && <img src={imageUrl} className="absolute inset-0 object-contain" />
+        }
+
       </div>
     </Rnd>,
     document.body,
