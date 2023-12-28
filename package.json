@@ -19,6 +19,7 @@
     "prisma": "prisma"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
     "@prisma/client": "^4.13.0",
     "@radix-ui/react-toast": "^1.1.5",
     "@remix-run/dev": "^2.0.0",
@@ -36,12 +37,14 @@
     "class-variance-authority": "^0.7.0",
     "isbot": "latest",
     "lucide-react": "^0.299.0",
+    "pdf-lib": "^1.17.1",
     "perfect-freehand": "^1.2.0",
     "prisma": "^4.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-pdf": "^7.6.0",
     "react-rnd": "^10.4.1",
+    "remix-utils": "^7.4.0",
     "tailwind-merge": "^2.2.0",
     "ts-pattern": "^5.0.6"
   },

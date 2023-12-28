@@ -27,3 +27,9 @@ model Document {
   data        String
 }
 
+
+model Signature {
+  id          String    @id 
+  shop        String
+  data        String
+}

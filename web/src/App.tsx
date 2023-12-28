@@ -109,6 +109,14 @@ function App() {
   const [imageData, setImageData] = useState<string | null>();
   const containerRef = useRef<HTMLDivElement>();
   const [doc, setDocument] = useState<any>();
+  useEffect(() => {
+    fetch("https://lender-secondary-voters-mariah.trycloudflare.com/customer/signing",)
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        console.log(JSON.parse(data.signature.data))
+      })
+  }, [])
   return (
     <>
       <div
@@ -132,7 +140,7 @@ function App() {
                 onDocumentLoad={doc => {
                   setTimeout(() => {
                     setDocument(doc)
-                  })
+                  }, 1000)
                 }}
               />
               {doc && fields?.map((field, index) => (
@@ -174,9 +182,24 @@ function App() {
                       Cancel
                     </button>
                     <button
+                      onClick={e => {
+                        e.preventDefault()
+                        fetch("https://lender-secondary-voters-mariah.trycloudflare.com/customer/signing", {
+                          body: JSON.stringify({
+                            id: Date.now() + '',
+                            documentId: "https://cdn.shopify.com/s/files/1/0661/3034/6209/files/Brochure-Digital-Format-NB.pdf?v=1703587780",
+                            signerId: "signature",
+                            fields: fields,
+                            signature: imageData
+                          }),
+                          headers: {
+                            "Content-Type": "application/json"
+                          },
+                          method: "POST"
+                        })
+                      }}
                       className="inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-blue-500 text-blue-100 hover:bg-blue-600 h-11 px-8 rounded-md w-full"
                       type="button"
-                      disabled
                       aria-haspopup="dialog"
                       aria-expanded="false"
                       aria-controls="radix-:Raijnlfff9ta:"
