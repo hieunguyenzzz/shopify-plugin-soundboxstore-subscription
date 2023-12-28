@@ -167,17 +167,16 @@ function App() {
                   <div className="flex flex-col gap-4 md:flex-row">
                     <a
                       href={url}
+                      target="_blank"
                       download={true}
-                      className="inline-flex gap-1 items-baseline justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-blue-500 text-blue-100 hover:bg-blue-600 h-11 px-8 rounded-md w-full"
+                      className="inline-flex gap-1 items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-blue-500 text-blue-100 hover:bg-blue-600 h-11 px-8 rounded-md w-full"
                       type="button"
                       aria-haspopup="dialog"
                       aria-expanded="false"
                       aria-controls="radix-:Raijnlfff9ta:"
                       data-state="closed"
                     >
-                      <div>
-                        <DownloadIcon />
-                      </div>
+                      <DownloadIcon />
                       Download
                     </a>
                   </div>
