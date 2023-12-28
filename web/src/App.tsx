@@ -34,8 +34,7 @@ function App() {
   const { isWithinPageBounds, getFieldPosition, getPage } =
     useDocumentElement();
   const [isFieldWithinBounds, setIsFieldWithinBounds] = useState(false);
-  const [selectedField, setSelectedField] = useState<"signature" | null>(
-  );
+  const [selectedField, setSelectedField] = useState<"signature" | null>();
   const [selectedSigner, setSelectedSigner] = useState<any | null>({
     id: "signature",
   });
@@ -47,7 +46,6 @@ function App() {
     height: 0,
     width: 0,
   });
-
 
   useEffect(() => {
     const observer = new MutationObserver((_mutations) => {
@@ -108,7 +106,9 @@ function App() {
     },
     [getFieldPosition],
   );
-  const [imageData, setImageData] = useState<string | null>()
+  const [imageData, setImageData] = useState<string | null>();
+  const containerRef = useRef<HTMLDivElement>();
+  const [doc, setDocument] = useState<any>();
   return (
     <>
       <div
@@ -116,7 +116,10 @@ function App() {
           "absolute inset-0 h-screen flex justify-center max-w-full items-center p-6 "
         }
       >
-        <div className="bg-background  gap-6 overflow-y-scroll overflow-x-hidden p-6 w-full h-full text-foreground group relative rounded-lg border-2 backdrop-blur-[2px] gradient-border-mask dark:gradient-border-mask before:pointer-events-none before:absolute before:-inset-[2px] before:rounded-lg before:p-[2px] before:[background:linear-gradient(var(--card-gradient-degrees),theme(colors.documenso.DEFAULT/70%)_5%,theme(colors.border/80%)_30%)] shadow-[0_0_0_4px_theme(colors.gray.100/70%),0_0_0_1px_theme(colors.gray.100/70%),0_0_0_0.5px_theme(colors.blue.DEFAULT/70%)] dark:shadow-[0] focus-visible:ring-ring ring-offset-background  flex-1 cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-60 min-h-[40vh]">
+        <div
+          ref={containerRef}
+          className="bg-background  gap-6 overflow-y-scroll overflow-x-hidden p-6 w-full h-full text-foreground group relative rounded-lg border-2 backdrop-blur-[2px] gradient-border-mask dark:gradient-border-mask before:pointer-events-none before:absolute before:-inset-[2px] before:rounded-lg before:p-[2px] before:[background:linear-gradient(var(--card-gradient-degrees),theme(colors.documenso.DEFAULT/70%)_5%,theme(colors.border/80%)_30%)] shadow-[0_0_0_4px_theme(colors.gray.100/70%),0_0_0_1px_theme(colors.gray.100/70%),0_0_0_0.5px_theme(colors.blue.DEFAULT/70%)] dark:shadow-[0] focus-visible:ring-ring ring-offset-background  flex-1 cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-60 min-h-[40vh]"
+        >
           <div className="w-full min-h-full justify-center flex gap-6 mx-auto">
             <div className="flex-1 rounded-lg max-w-4xl w-0 ">
               <PDFViewer
@@ -126,10 +129,15 @@ function App() {
                   type: "S3_PATH",
                   id: "https://cdn.shopify.com/s/files/1/0661/3034/6209/files/Brochure-Digital-Format-NB.pdf?v=1703587780",
                 }}
-                onDocumentLoad={console.log}
+                onDocumentLoad={doc => {
+                  setTimeout(() => {
+                    setDocument(doc)
+                  })
+                }}
               />
-              {fields?.map((field, index) => (
+              {doc && fields?.map((field, index) => (
                 <FieldItem
+                  container={containerRef.current}
                   imageUrl={imageData}
                   key={index}
                   field={field}
@@ -154,7 +162,7 @@ function App() {
                     <SignaturePad
                       className="h-44 w-full p-6"
                       defaultValue={undefined}
-                      onChange={(setImageData)}
+                      onChange={setImageData}
                     />
                   </div>
                   <hr className="border-border mb-8 mt-4" />

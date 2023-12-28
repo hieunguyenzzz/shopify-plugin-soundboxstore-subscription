@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Rnd } from "react-rnd";
 import { cn } from "../lib/utils";
 const PDF_VIEWER_PAGE_SELECTOR = ".react-pdf__Page";
 export type FieldType = {
@@ -29,6 +28,7 @@ export type FieldItemProps = {
   onMove?: (_node: HTMLElement) => void;
   onRemove?: () => void;
   imageUrl?: string
+  container?: HTMLElement
 };
 
 export const FieldItem = ({
@@ -40,6 +40,7 @@ export const FieldItem = ({
   minWidth: _minWidth,
   onResize,
   onMove,
+  container,
   onRemove,
 }: FieldItemProps) => {
   const [active, setActive] = useState(false);
@@ -101,31 +102,21 @@ export const FieldItem = ({
   }, [calculateCoords]);
 
   return createPortal(
-    <Rnd
+    <div
       key={coords.pageX + coords.pageY + coords.pageHeight + coords.pageWidth}
       className={cn("z-20", {
         "pointer-events-none": passive,
         "pointer-events-none opacity-75": disabled,
         "z-10": !active || disabled,
       })}
-      disableDragging={true}
-      default={{
-        x: coords.pageX,
-        y: coords.pageY,
+      style={{
+        position: "absolute",
+        top: coords.pageY,
+        left: coords.pageX,
         height: coords.pageHeight,
         width: coords.pageWidth,
       }}
-      bounds={`${PDF_VIEWER_PAGE_SELECTOR}[data-page-number="${field.pageNumber}"]`}
-      onDragStart={() => setActive(true)}
-      onResizeStart={() => setActive(true)}
-      onResizeStop={(_e, _d, ref) => {
-        setActive(false);
-        onResize?.(ref);
-      }}
-      onDragStop={(_e, d) => {
-        setActive(false);
-        onMove?.(d.node);
-      }}
+
     >
       <div className="text-foreground group flex justify-center items-center border-gray-100 bg-white text-center relative rounded-lg border-2 backdrop-blur-[2px]  bg-background h-full w-full border-primary">
         {!imageUrl && <p>{field.type}</p>}
@@ -134,7 +125,7 @@ export const FieldItem = ({
         }
 
       </div>
-    </Rnd>,
-    document.body,
+    </div>,
+    container || document.body,
   );
 };
