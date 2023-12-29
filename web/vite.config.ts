@@ -1,7 +1,12 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import shopify from 'vite-plugin-shopify'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    shopify({
+      themeRoot: '../extensions/rent-btn'
+    }),
+    react(),
+  ]
 })
