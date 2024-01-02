@@ -10,7 +10,7 @@ const DEFAULT_WIDTH_PERCENT = 15;
 
 const MIN_HEIGHT_PX = 60;
 const MIN_WIDTH_PX = 120;
-
+let apiUrl = `https://surge-reaction-around-frames.trycloudflare.com`
 function App() {
   const [fields, setFields] = useState([
     {
@@ -111,7 +111,7 @@ function App() {
   const containerRef = useRef<HTMLDivElement>();
   const [doc, setDocument] = useState<any>();
   useEffect(() => {
-    fetch("https://lender-secondary-voters-mariah.trycloudflare.com/customer/signing",)
+    fetch(apiUrl + "/customer/signing",)
       .then(res => res.json())
       .then(data => {
         console.log(data)
@@ -124,12 +124,12 @@ function App() {
     return <>
       <div
         className={
-          "absolute inset-0 h-screen flex justify-center max-w-full items-center p-6 "
+          "fixed z-50 inset-0 h-screen flex justify-center max-w-full items-center p-6"
         }
       >
         <div key={url}
           ref={containerRef}
-          className="bg-background  gap-6 overflow-y-scroll overflow-x-hidden p-6 w-full h-full text-foreground group relative rounded-lg border-2 backdrop-blur-[2px] gradient-border-mask dark:gradient-border-mask before:pointer-events-none before:absolute before:-inset-[2px] before:rounded-lg before:p-[2px] before:[background:linear-gradient(var(--card-gradient-degrees),theme(colors.documenso.DEFAULT/70%)_5%,theme(colors.border/80%)_30%)] shadow-[0_0_0_4px_theme(colors.gray.100/70%),0_0_0_1px_theme(colors.gray.100/70%),0_0_0_0.5px_theme(colors.blue.DEFAULT/70%)] dark:shadow-[0] focus-visible:ring-ring ring-offset-background  flex-1 cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-60 min-h-[40vh]"
+          className="bg-background  gap-6 overflow-y-scroll overflow-x-hidden p-6 w-full h-full text-foreground group relative rounded-lg border-2 backdrop-blur-lg bg-white bg-opacity-30 gradient-border-mask dark:gradient-border-mask before:pointer-events-none before:absolute before:-inset-[2px] before:rounded-lg before:p-[2px] before:[background:linear-gradient(var(--card-gradient-degrees),theme(colors.documenso.DEFAULT/70%)_5%,theme(colors.border/80%)_30%)] shadow-[0_0_0_4px_theme(colors.gray.100/70%),0_0_0_1px_theme(colors.gray.100/70%),0_0_0_0.5px_theme(colors.blue.DEFAULT/70%)] dark:shadow-[0] focus-visible:ring-ring ring-offset-background  flex-1 cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-60 min-h-[40vh]"
         >
           <div className="w-full min-h-full justify-center flex gap-6 mx-auto">
             <div className="flex-1 rounded-lg max-w-4xl w-0 ">
@@ -192,12 +192,12 @@ function App() {
     <>
       <div
         className={
-          "absolute inset-0 h-screen flex justify-center max-w-full items-center p-6 "
+          "fixed z-40 inset-0 h-screen flex justify-center max-w-full items-center p-6 "
         }
       >
         <div
           ref={containerRef}
-          className="bg-background  gap-6 overflow-y-scroll overflow-x-hidden p-6 w-full h-full text-foreground group relative rounded-lg border-2 backdrop-blur-[2px] gradient-border-mask dark:gradient-border-mask before:pointer-events-none before:absolute before:-inset-[2px] before:rounded-lg before:p-[2px] before:[background:linear-gradient(var(--card-gradient-degrees),theme(colors.documenso.DEFAULT/70%)_5%,theme(colors.border/80%)_30%)] shadow-[0_0_0_4px_theme(colors.gray.100/70%),0_0_0_1px_theme(colors.gray.100/70%),0_0_0_0.5px_theme(colors.blue.DEFAULT/70%)] dark:shadow-[0] focus-visible:ring-ring ring-offset-background  flex-1 cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-60 min-h-[40vh]"
+          className="bg-background  gap-6 overflow-y-scroll overflow-x-hidden p-6 w-full h-full text-foreground group relative rounded-lg border-2 backdrop-blur-lg bg-white bg-opacity-30 gradient-border-mask dark:gradient-border-mask before:pointer-events-none before:absolute before:-inset-[2px] before:rounded-lg before:p-[2px] before:[background:linear-gradient(var(--card-gradient-degrees),theme(colors.documenso.DEFAULT/70%)_5%,theme(colors.border/80%)_30%)] shadow-[0_0_0_4px_theme(colors.gray.100/70%),0_0_0_1px_theme(colors.gray.100/70%),0_0_0_0.5px_theme(colors.blue.DEFAULT/70%)] dark:shadow-[0] focus-visible:ring-ring ring-offset-background  flex-1 cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 aria-disabled:pointer-events-none aria-disabled:opacity-60 min-h-[40vh]"
         >
           <div className="w-full min-h-full justify-center flex gap-6 mx-auto">
             <div className="flex-1 rounded-lg max-w-4xl w-0 ">

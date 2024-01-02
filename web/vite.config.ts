@@ -5,7 +5,7 @@ import shopify from 'vite-plugin-shopify'
 export default defineConfig({
   plugins: [
     shopify({
-      themeRoot: '../extensions/rent-btn'
+      themeRoot: '../extensions/rent-btn',
     }),
     react(),
   ]

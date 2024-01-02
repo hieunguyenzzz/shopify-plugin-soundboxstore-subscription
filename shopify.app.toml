@@ -2,7 +2,7 @@
 
 name = "plugin-subscription"
 client_id = "a1b2fc5f328819ca821266a6622ee9f5"
-application_url = "https://foundations-modem-pas-transmission.trycloudflare.com"
+application_url = "https://handheld-parent-universal-examined.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_customers,read_orders,read_files,write_files"
 
 [auth]
 redirect_urls = [
-  "https://foundations-modem-pas-transmission.trycloudflare.com/auth/callback",
-  "https://foundations-modem-pas-transmission.trycloudflare.com/auth/shopify/callback",
-  "https://foundations-modem-pas-transmission.trycloudflare.com/api/auth/callback"
+  "https://handheld-parent-universal-examined.trycloudflare.com/auth/callback",
+  "https://handheld-parent-universal-examined.trycloudflare.com/auth/shopify/callback",
+  "https://handheld-parent-universal-examined.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
