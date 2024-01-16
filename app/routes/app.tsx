@@ -23,8 +23,8 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/app/setting">
-          Setting
+        <Link to="/app/discounts">
+          Discounts
         </Link>
       </ui-nav-menu>
       <Outlet />
