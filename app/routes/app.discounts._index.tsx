@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
+import { useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
 import {
   Banner,
   BlockStack,
@@ -383,7 +383,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 export default function RentingPage() {
   const { discounts, data, shop, collection, options, ...rest } =
     useLoaderData<typeof loader>();
-  console.log({ discounts, data, shop, collection, ...rest })
+  const navigation = useNavigation();
   const submit = useSubmit();
   const { fields, submit: submitForm } = useForm({
     fields: {
@@ -396,6 +396,7 @@ export default function RentingPage() {
       ),
     },
     onSubmit: async (form) => {
+
       submit(
         {
           collection: collection?.id,
@@ -423,8 +424,10 @@ export default function RentingPage() {
     );
     fields.collection?.onChange(collectionId);
   };
+  const loading = navigation.state === "loading" || navigation.state === "submitting"
   return (
     <PageDefaultLayout
+
       title={"Discounts"}
       backAction={{
         url: "/app",
@@ -434,6 +437,7 @@ export default function RentingPage() {
       <BlockStack gap={"400"}>
         <BasicCard title="Collection">
           <ResourceList
+            loading={loading}
             resourceName={{ singular: "collection", plural: "collections" }}
             items={
               [collection].filter(Boolean) as {
@@ -482,7 +486,7 @@ export default function RentingPage() {
           />
         </BasicCard>
         <BasicCard title="Options">
-          <ResourceList
+          <ResourceList loading={loading}
             resourceName={{ singular: "option", plural: "options" }}
             items={
               fields.options?.value
@@ -566,6 +570,13 @@ export default function RentingPage() {
                         autoComplete="off"
                       />
                     </FormLayout.Group>
+                    <InlineStack align="end">
+                      <Button onClick={() => {
+                        let newFields = [...fields.options?.value]
+                        newFields.splice(index, 1)
+                        fields.options?.onChange(newFields)
+                      }} tone="critical" variant="primary">Remove</Button>
+                    </InlineStack>
                   </FormLayout>
                 </ResourceItem>
               );
