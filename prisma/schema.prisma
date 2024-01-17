@@ -20,3 +20,12 @@ model Session {
   accessToken String
   userId      BigInt?
 }
+
+model RentingOptions {
+  id          String    @id
+  shop        String
+  state       String
+  title       String
+  percent     Int?
+  months      Int?
+}
