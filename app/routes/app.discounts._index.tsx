@@ -1,5 +1,10 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
+import {
+  json,
+  useLoaderData,
+  useNavigation,
+  useSubmit,
+} from "@remix-run/react";
 import {
   Banner,
   BlockStack,
@@ -20,225 +25,13 @@ import { useField, useForm } from "@shopify/react-form";
 import { useState } from "react";
 import BasicCard from "~/_components/Card";
 import PageDefaultLayout from "~/_components/PageLayouts";
+import { createRentingDiscounts } from "~/_helpers/mutations";
+import { deleteRentingDiscounts } from "~/_helpers/mutations/deleteDiscounts";
+import { getAllRetingDiscounts } from "~/_helpers/query";
 import { authenticate } from "~/shopify.server";
 
-let QUERY = `#graphql 
-query DiscountNodes($first: Int, $last: Int, $after: String, $before: String, $reverse: Boolean, $sortKey: DiscountSortKeys, $query: String, $savedSearchId: ID) {
-  discountNodes(
-    first: $first
-    last: $last
-    after: $after
-    before: $before
-    reverse: $reverse
-    sortKey: $sortKey
-    query: $query
-    savedSearchId: $savedSearchId
-  ) {
-    pageInfo {
-      hasNextPage
-      hasPreviousPage
-      __typename
-    }
-    edges {
-      cursor
-      node {
-        id
-        discount {
-          ... on DiscountCodeBasic {
-            title
-            status
-            summary
-            
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            merchandiseDiscountClass: discountClass
-            asyncUsageCount
-            codeCount
-            
-            customerGets {
-              items {
-                __typename
-              }
-              __typename
-            }
-            __typename
-          }
-          ... on DiscountCodeBxgy {
-            title
-            status
-            summary
-            
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            merchandiseDiscountClass: discountClass
-            asyncUsageCount
-            codeCount
-           
-            __typename
-          }
-          ... on DiscountCodeFreeShipping {
-            title
-            status
-            summary
-            
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            shippingDiscountClass: discountClass
-            asyncUsageCount
-            codeCount
-          
-            __typename
-          }
-          ... on DiscountAutomaticBasic {
-            title
-            status
-            summary
-            
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            merchandiseDiscountClass: discountClass
-            asyncUsageCount
-            customerGets {
-              items {
-                __typename
-              }
-              __typename
-            }
-            __typename
-          }
-          ... on DiscountAutomaticBxgy {
-            id
-            title
-            status
-            summary
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            merchandiseDiscountClass: discountClass
-            asyncUsageCount
-            __typename
-          }
-          ... on DiscountAutomaticFreeShipping {
-            title
-            status
-            summary
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            shippingDiscountClass: discountClass
-            asyncUsageCount
-            __typename
-          }
-          ... on DiscountCodeApp {
-            __typename
-            title
-            status
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            asyncUsageCount
-            codeCount
-            discountClass
-            errorHistory {
-              errorsFirstOccurredAt
-              hasSharedRecentErrors
-              __typename
-            }
-            appDiscountType {
-              functionId
-              title
-              app {
-                id
-                ...DiscountListApp
-                __typename
-              }
-              appBridge {
-                detailsPath
-                __typename
-              }
-              __typename
-            }
-          }
-          ... on DiscountAutomaticApp {
-            __typename
-            title
-            status
-            combinesWith {
-              ...CombinesWith
-              __typename
-            }
-            asyncUsageCount
-            discountClass
-            errorHistory {
-              errorsFirstOccurredAt
-              hasSharedRecentErrors
-              __typename
-            }
-            appDiscountType {
-              functionId
-              title
-              app {
-                id
-                ...DiscountListApp
-                __typename
-              }
-              appBridge {
-                detailsPath
-                __typename
-              }
-              __typename
-            }
-          }
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-}
-
-fragment CombinesWith on DiscountCombinesWith {
-  productDiscounts
-  orderDiscounts
-  shippingDiscounts
-  __typename
-}
-
-fragment DiscountListApp on App {
-  id
-  title
-  handle
-  developerName
-  shopifyDeveloped
-  installation {
-    id
-    launchUrl
-    __typename
-  }
-  icon {
-    id
-    transformedSrc: url(transform: {maxWidth: 48, maxHeight: 48})
-    __typename
-  }
-  __typename
-}
-`;
-
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
   const {
     data: { shop },
   } = await admin
@@ -289,21 +82,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     )
     .then((res) => res.json())
     .catch(() => ({ data: {} }));
-  const { data } = await admin
-    .graphql(QUERY, {
-      variables: {
-        first: 50,
-        last: null,
-        after: null,
-        before: null,
-        reverse: true,
-        sortKey: "ID",
-        savedSearchId: null,
-        query: "title:Renting_*",
-      },
-    })
-    .then((res) => res.json());
-
+  const data = await getAllRetingDiscounts({ admin, session })();
   let discounts: {
     id: string;
     name: string;
@@ -314,14 +93,17 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       ...item?.node?.discount,
     };
   });
-  return {
+  return json({
     shop,
     discounts,
     data,
     options: optionsStr ? JSON.parse(optionsStr) : [],
     collection,
     collectionid,
-  };
+    priceRules: await admin.rest.resources.PriceRule.all({
+      session: session,
+    }).then((res) => res.data),
+  });
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
@@ -374,33 +156,60 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       },
     )
     .then((res) => res.json());
+  const data = await getAllRetingDiscounts({ admin, session })();
+  let discountIds: string[] = data?.discountNodes?.edges?.map((item: any) => {
+    return item?.node?.id;
+  });
+  if (discountIds.length > 0) {
+    let deleteres = await deleteRentingDiscounts({ admin, session })({
+      ids: discountIds,
+    });
+    console.log({ deleteres });
+  }
+  let validOptions =
+    renting?.options?.filter(
+      (item: { percent: any; months: string }) =>
+        item.percent &&
+        item?.percent !== "" &&
+        item?.percent !== "0" &&
+        item.percent !== 0,
+    ) || [];
+  let newdiscounts = await createRentingDiscounts({
+    admin,
+    session,
+  })({
+    collectionId: collection,
+    options: validOptions,
+  });
   return {
+    discounts: newdiscounts,
     shopId: id,
     renting,
     res,
   };
 };
 export default function RentingPage() {
-  const { discounts, data, shop, collection, options, ...rest } =
+  const { discounts, data, shop, collection, options, priceRules, ...rest } =
     useLoaderData<typeof loader>();
+  console.log({ discounts, data, shop, collection, options, ...rest });
   const navigation = useNavigation();
   const submit = useSubmit();
   const { fields, submit: submitForm } = useForm({
     fields: {
       collection: useField(""),
       options: useField(
-        options || [] as {
-          percent: string;
-          months: string;
-        }[],
+        options ||
+          ([] as {
+            percent: string;
+            months: string;
+          }[]),
       ),
     },
     onSubmit: async (form) => {
-
       submit(
         {
           collection: collection?.id,
-          renting: form
+          renting: form,
         },
         { method: "post", encType: "application/json" },
       );
@@ -424,15 +233,14 @@ export default function RentingPage() {
     );
     fields.collection?.onChange(collectionId);
   };
-  const loading = navigation.state === "loading" || navigation.state === "submitting"
+  const loading =
+    navigation.state === "loading" || navigation.state === "submitting";
   return (
     <PageDefaultLayout
-
       title={"Discounts"}
       backAction={{
         url: "/app",
       }}
-
     >
       <BlockStack gap={"400"}>
         <BasicCard title="Collection">
@@ -479,29 +287,34 @@ export default function RentingPage() {
                   <Text variant="bodyMd" fontWeight="bold" as="h3">
                     {name}
                   </Text>
-
                 </ResourceItem>
               );
             }}
           />
         </BasicCard>
         <BasicCard title="Options">
-          <ResourceList loading={loading}
+          <ResourceList
+            loading={loading}
             resourceName={{ singular: "option", plural: "options" }}
             items={
               fields.options?.value
-                ? fields.options?.value.map(
-                  (item: { percent: string; months: string }, i: number) => {
-                    let id = i
-                    return {
-                      id: id,
-                      index: i,
-                      name: id,
-                      url: "#",
-                      ...item,
-                    };
-                  },
-                ).sort((a, b) => Number(a.months) - Number(b.months))
+                ? fields.options?.value
+                    .map(
+                      (
+                        item: { percent: string; months: string },
+                        i: number,
+                      ) => {
+                        let id = i;
+                        return {
+                          id: id,
+                          index: i,
+                          name: id,
+                          url: "#",
+                          ...item,
+                        };
+                      },
+                    )
+                    .sort((a, b) => Number(a.months) - Number(b.months))
                 : []
             }
             emptyState={
@@ -526,11 +339,15 @@ export default function RentingPage() {
                     fields.options.onChange([...fields.options?.value, f])
                   }
                 />
-                <Button onClick={() => {
-                  submitForm()
-                }} variant="primary">Save</Button>
+                <Button
+                  onClick={() => {
+                    submitForm();
+                  }}
+                  variant="primary"
+                >
+                  Save
+                </Button>
               </InlineStack>
-
             }
             renderItem={(item) => {
               const { id, name, url, percent, months, index } = item;
@@ -540,11 +357,10 @@ export default function RentingPage() {
               return (
                 <ResourceItem
                   id={id}
-                  url={url}
+                  onClick={() => {}}
                   media={media}
                   accessibilityLabel={`View details for ${name}`}
                 >
-
                   <FormLayout>
                     <FormLayout.Group>
                       <TextField
@@ -552,9 +368,9 @@ export default function RentingPage() {
                         label="Moths"
                         value={fields.options?.value[index].months}
                         onChange={() => {
-                          let newFields = [...fields.options?.value]
-                          newFields[index].months = months
-                          fields.options?.onChange(newFields)
+                          let newFields = [...fields.options?.value];
+                          newFields[index].months = months;
+                          fields.options?.onChange(newFields);
                         }}
                         autoComplete="off"
                       />
@@ -563,19 +379,25 @@ export default function RentingPage() {
                         value={fields.options?.value[index].percent}
                         label="Percent"
                         onChange={() => {
-                          let newFields = [...fields.options?.value]
-                          newFields[index].percent = percent
-                          fields.options?.onChange(newFields)
+                          let newFields = [...fields.options?.value];
+                          newFields[index].percent = percent;
+                          fields.options?.onChange(newFields);
                         }}
                         autoComplete="off"
                       />
                     </FormLayout.Group>
                     <InlineStack align="end">
-                      <Button onClick={() => {
-                        let newFields = [...fields.options?.value]
-                        newFields.splice(index, 1)
-                        fields.options?.onChange(newFields)
-                      }} tone="critical" variant="primary">Remove</Button>
+                      <Button
+                        onClick={() => {
+                          let newFields = [...fields.options?.value];
+                          newFields.splice(index, 1);
+                          fields.options?.onChange(newFields);
+                        }}
+                        tone="critical"
+                        variant="primary"
+                      >
+                        Remove
+                      </Button>
                     </InlineStack>
                   </FormLayout>
                 </ResourceItem>
@@ -585,6 +407,59 @@ export default function RentingPage() {
             totalItemsCount={discounts.length}
           />
         </BasicCard>
+        {/* <BasicCard title="Discounts">
+          <ResourceList
+            loading={loading}
+            resourceName={{ singular: "discount", plural: "discounts" }}
+            items={
+              discounts
+                ? discounts
+                    .map((item, i: number) => {
+                      return {
+                        index: i,
+                        url: "#",
+                        ...item,
+                      };
+                    })
+                    .sort((a, b) => Number(a.months) - Number(b.months))
+                : []
+            }
+            emptyState={
+              <EmptyState image="https://cdn.shopify.com/s/files/1/2376/3301/products/emptystate-files.png">
+                <Box paddingBlock={"400"}>
+                  <Text as="h3" fontWeight="bold" alignment="start">
+                    No discount created
+                  </Text>
+                </Box>
+              </EmptyState>
+            }
+            renderItem={(item) => {
+              const { id, name } = item;
+              const media = (
+                <Thumbnail alt="" size="small" source={DiscountsMajor} />
+              );
+              return (
+                <ResourceItem
+                  id={id + ""}
+                  onClick={() => {}}
+                  media={media}
+                  accessibilityLabel={`View details for ${name}`}
+                >
+                  <InlineStack align="space-between">
+                    <Text as="p" variant="bodyMd">
+                      {name}
+                    </Text>
+                  </InlineStack>
+                  <Text as="p" variant="bodyMd">
+                    {id}
+                  </Text>
+                </ResourceItem>
+              );
+            }}
+            showHeader
+            totalItemsCount={discounts.length}
+          />
+        </BasicCard> */}
       </BlockStack>
     </PageDefaultLayout>
   );
@@ -596,6 +471,7 @@ function PopoverNewOption({
   onSubmit: (a: { percent: string; months: string }) => void;
 }) {
   const [active, setActive] = useState(false);
+
   return (
     <Popover
       active={active}
@@ -628,17 +504,20 @@ const NewOptionForm = ({
     makeClean,
   } = useForm({
     fields: {
-      percent: useField(""),
+      percent: useField("0"),
       months: useField(""),
     },
 
     onSubmit: async (form) => {
-      if (form.percent === "" || form.months === "")
+      if (form.months === "")
         return {
           status: "fail",
           errors: [{ message: "Please fill all fields" }],
         };
-      onSubmit(form);
+      onSubmit({
+        percent: form.percent || "0",
+        months: form.months,
+      });
       reset();
       return { status: "success" };
     },

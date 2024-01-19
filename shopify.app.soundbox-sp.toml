@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "plugin-subscription"
-client_id = "a1b2fc5f328819ca821266a6622ee9f5"
-application_url = "https://attend-particular-pounds-hybrid.trycloudflare.com"
+name = "soundbox-sp"
+client_id = "2e7c0654220bac9751fa220320174800"
+application_url = "https://expansys-conversations-drag-computers.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,13 +11,13 @@ scopes = "write_products,read_customers,read_orders,write_price_rules,read_price
 
 [auth]
 redirect_urls = [
-  "https://attend-particular-pounds-hybrid.trycloudflare.com/auth/callback",
-  "https://attend-particular-pounds-hybrid.trycloudflare.com/auth/shopify/callback",
-  "https://attend-particular-pounds-hybrid.trycloudflare.com/api/auth/callback"
+  "https://expansys-conversations-drag-computers.trycloudflare.com/auth/callback",
+  "https://expansys-conversations-drag-computers.trycloudflare.com/auth/shopify/callback",
+  "https://expansys-conversations-drag-computers.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
-api_version = "2023-10"
+api_version = "2024-01"
 
 [pos]
 embedded = false
