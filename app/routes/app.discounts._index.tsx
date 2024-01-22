@@ -366,8 +366,8 @@ export default function RentingPage() {
                       <TextField
                         type="number"
                         label="Moths"
-                        value={fields.options?.value[index].months}
-                        onChange={() => {
+                        value={(fields.options?.value[index].months)}
+                        onChange={(months) => {
                           let newFields = [...fields.options?.value];
                           newFields[index].months = months;
                           fields.options?.onChange(newFields);
@@ -378,7 +378,7 @@ export default function RentingPage() {
                         type="number"
                         value={fields.options?.value[index].percent}
                         label="Percent"
-                        onChange={() => {
+                        onChange={(percent) => {
                           let newFields = [...fields.options?.value];
                           newFields[index].percent = percent;
                           fields.options?.onChange(newFields);
