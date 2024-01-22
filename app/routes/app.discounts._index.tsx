@@ -149,7 +149,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
               namespace: "renting",
               key: "options",
               value: JSON.stringify(renting.options),
-              type: "single_line_text_field",
+              type: "json",
             },
           ].filter(Boolean),
         },
@@ -199,10 +199,10 @@ export default function RentingPage() {
       collection: useField(""),
       options: useField(
         options ||
-          ([] as {
-            percent: string;
-            months: string;
-          }[]),
+        ([] as {
+          percent: string;
+          months: string;
+        }[]),
       ),
     },
     onSubmit: async (form) => {
@@ -299,22 +299,22 @@ export default function RentingPage() {
             items={
               fields.options?.value
                 ? fields.options?.value
-                    .map(
-                      (
-                        item: { percent: string; months: string },
-                        i: number,
-                      ) => {
-                        let id = i;
-                        return {
-                          id: id,
-                          index: i,
-                          name: id,
-                          url: "#",
-                          ...item,
-                        };
-                      },
-                    )
-                    .sort((a, b) => Number(a.months) - Number(b.months))
+                  .map(
+                    (
+                      item: { percent: string; months: string },
+                      i: number,
+                    ) => {
+                      let id = i;
+                      return {
+                        id: id,
+                        index: i,
+                        name: id,
+                        url: "#",
+                        ...item,
+                      };
+                    },
+                  )
+                  .sort((a, b) => Number(a.months) - Number(b.months))
                 : []
             }
             emptyState={
@@ -357,7 +357,7 @@ export default function RentingPage() {
               return (
                 <ResourceItem
                   id={id}
-                  onClick={() => {}}
+                  onClick={() => { }}
                   media={media}
                   accessibilityLabel={`View details for ${name}`}
                 >
