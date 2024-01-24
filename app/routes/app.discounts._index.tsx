@@ -149,7 +149,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
               namespace: "renting",
               key: "options",
               value: JSON.stringify(renting.options),
-              type: "single_line_text_field",
+              type: "json",
             },
           ].filter(Boolean),
         },
@@ -198,11 +198,10 @@ export default function RentingPage() {
     fields: {
       collection: useField(""),
       options: useField(
-        (options ||
-          ([])) as {
-            percent: string;
-            months: string;
-          }[],
+        (options || []) as {
+          percent: string;
+          months: string;
+        }[],
       ),
     },
     onSubmit: async (form) => {
@@ -359,7 +358,7 @@ export default function RentingPage() {
               );
               return (
                 <ResourceItem
-                  id={id}
+                  id={id + ''}
                   onClick={() => { }}
                   media={media}
                   accessibilityLabel={`View details for ${name}`}
@@ -369,8 +368,8 @@ export default function RentingPage() {
                       <TextField
                         type="number"
                         label="Moths"
-                        value={fields.options?.value[index].months}
-                        onChange={() => {
+                        value={(fields.options?.value[index].months)}
+                        onChange={(months) => {
                           let newFields = [...fields.options?.value];
                           newFields[index].months = months;
                           fields.options?.onChange(newFields);
@@ -381,7 +380,7 @@ export default function RentingPage() {
                         type="number"
                         value={fields.options?.value[index].percent}
                         label="Percent"
-                        onChange={() => {
+                        onChange={(percent) => {
                           let newFields = [...fields.options?.value];
                           newFields[index].percent = percent;
                           fields.options?.onChange(newFields);

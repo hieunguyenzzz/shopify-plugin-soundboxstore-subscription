@@ -2,7 +2,7 @@
 
 name = "plugin-sbs-subscription"
 client_id = "630f22c9d054058af83186aac630ad6b"
-application_url = "https://gadgets-kate-completed-ordinance.trycloudflare.com"
+application_url = "https://jump-oops-planes-airfare.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_products,read_customers,read_orders,write_price_rules,read_price
 
 [auth]
 redirect_urls = [
-  "https://gadgets-kate-completed-ordinance.trycloudflare.com/auth/callback",
-  "https://gadgets-kate-completed-ordinance.trycloudflare.com/auth/shopify/callback",
-  "https://gadgets-kate-completed-ordinance.trycloudflare.com/api/auth/callback"
+  "https://jump-oops-planes-airfare.trycloudflare.com/auth/callback",
+  "https://jump-oops-planes-airfare.trycloudflare.com/auth/shopify/callback",
+  "https://jump-oops-planes-airfare.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -23,9 +23,132 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
-
-  const response = await admin.graphql(
-    `#graphql
+  const body = await request.json();
+  console.log("body", body);
+  const { preview, pageInfo, next } = body;
+  let response = {}
+  if (preview) {
+    response = await admin.graphql(
+      `#graphql
+        query getSubscriptions {
+          orders(last: 20, query: "tag:hiring", before: "${pageInfo?.startCursor}") {
+            pageInfo {
+              endCursor
+              hasNextPage
+              hasPreviousPage
+              startCursor
+            }
+            nodes {
+              id
+              name
+              email
+              customer{
+                firstName
+                lastName
+                email
+              }
+              closed
+              cancelledAt
+              processedAt
+              note
+              hasTimelineComment
+              displayFinancialStatus
+              displayFulfillmentStatus
+              returnStatus
+              shippingLine {
+                id
+                title
+              }
+              currentTotalPriceSet {
+                shopMoney {
+                  amount
+                  currencyCode
+                }
+                presentmentMoney {
+                  amount
+                  currencyCode
+                }
+              }
+              currentSubtotalLineItemsQuantity
+              disputes {
+                id
+                initiatedAs
+                status
+              }
+              tags
+            }
+          }
+        }`,
+      {
+        variables: {
+          input: {
+          },
+        },
+      }
+    );
+  } else if (next) {
+    response = await admin.graphql(
+      `#graphql
+        query getSubscriptions {
+          orders(first: 20, query: "tag:hiring", after: "${pageInfo?.endCursor}") {
+            pageInfo {
+              endCursor
+              hasNextPage
+              hasPreviousPage
+              startCursor
+            }
+            nodes {
+              id
+              name
+              email
+              customer{
+                firstName
+                lastName
+                email
+              }
+              closed
+              cancelledAt
+              processedAt
+              note
+              hasTimelineComment
+              displayFinancialStatus
+              displayFulfillmentStatus
+              returnStatus
+              shippingLine {
+                id
+                title
+              }
+              currentTotalPriceSet {
+                shopMoney {
+                  amount
+                  currencyCode
+                }
+                presentmentMoney {
+                  amount
+                  currencyCode
+                }
+              }
+              currentSubtotalLineItemsQuantity
+              disputes {
+                id
+                initiatedAs
+                status
+              }
+              tags
+            }
+          }
+        }`,
+      {
+        variables: {
+          input: {
+          },
+        },
+      }
+    );
+  }
+  else {
+    response = await admin.graphql(
+      `#graphql
       query getSubscriptions {
         orders(first: 20, query: "tag:hiring") {
           pageInfo {
@@ -75,15 +198,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           }
         }
       }`,
-    {
-      variables: {
-        input: {
+      {
+        variables: {
+          input: {
+          },
         },
-      },
-    }
-  );
+      }
+    );
+  }
   const responseJson = await response.json();
-  console.log(responseJson);
+  console.log("responseJson", responseJson);
   return json({
     orders: responseJson.data?.orders || [],
   });
@@ -108,7 +232,7 @@ function Content() {
   let loading = useNavigation().state === "loading"
   const [itemStrings] = useState([
     'All',
-    'Upcomming',
+    // 'Upcomming',
   ]);
   useEffect(() => {
     console.log(actionData);
@@ -126,7 +250,7 @@ function Content() {
   useEffect(() => {
     submit({
       test: "test"
-    }, { replace: true, method: "POST" })
+    }, { replace: true, method: "POST", encType: "application/json" })
   }, [selected]);
   const sortOptions: IndexFiltersProps['sortOptions'] = [
     { label: 'Order', value: 'order asc', directionLabel: 'Ascending' },
@@ -265,6 +389,22 @@ function Content() {
           { title: 'Total', alignment: 'end' },
           { title: 'Details', alignment: 'end' },
         ]}
+        pagination={{
+          hasNext: actionData?.orders.pageInfo.hasNextPage,
+          hasPrevious: actionData?.orders.pageInfo.hasPreviousPage,
+          onPrevious() {
+            submit({
+              preview: true,
+              pageInfo: actionData?.orders.pageInfo,
+            }, { replace: true, method: "POST", encType: "application/json" })
+          },
+          onNext: () => {
+            submit({
+              next: true,
+              pageInfo: actionData?.orders.pageInfo,
+            }, { replace: true, method: "POST", encType: "application/json" })
+          },
+        }}
       >
         {rowMarkup}
       </IndexTable>
